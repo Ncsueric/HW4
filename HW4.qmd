@@ -1,0 +1,177 @@
+---
+title: "HW4"
+format: html
+editor: visual
+---
+
+## Task 1: Conceptual Questions
+
+### 1. What is the purpose of the lapply() function? What is the equivalent purrr function?
+
+Apply functon to lists.map()
+
+### 2. Suppose we have a list called my_list. Each element of the list is a numeric data frame (all columns are numeric). We want use lapply() to run the code cor(numeric_matrix, method = "kendall") on each element of the list. Write code to do this below! (I’m really trying to ask you how you specifymethod = "kendall" when calling lapply())
+
+lapply(x=my_list,FUN=function(x){temp\<-cor(x, method = "kendall")})
+
+### 3. What are two advantages of using purrr functions instead of the BaseR apply family? purrr gives us a bit cleaner/more consistent way to apply functions to objects
+
+purrr functions also give a shorthand way to make anonymous functions
+
+### 4. What is a side-effect function?
+
+A side-effect function in programming is a function that performs operations other than returning a value,like print()
+
+### 5. Why can you name a variable sd in a function and not cause any issues with the sd function?
+
+When you call a function, it creates temporary function environments
+
+## Task 2
+
+### 1
+
+```{r}
+
+getRMSE<- function(x,y){
+  x[is.na(x)] <- mean(x, na.rm = TRUE)
+  y[is.na(y)] <- mean(y, na.rm = TRUE)
+  rmse <- mean((x-y)^2)^(1/2)
+}
+
+```
+
+### 2
+
+```{r}
+set.seed(10)
+n <- 100
+x <- runif(n)
+resp <- 3 + 10*x + rnorm(n)
+pred <- predict(lm(resp ~ x), data.frame(x))
+ 
+rmse<-getRMSE(resp,pred)
+print(rmse)
+ 
+resp[2] <-NA
+pred[5] <-NA
+ 
+rmse<-getRMSE(resp,pred)
+print(rmse)
+ 
+ 
+```
+
+### 3
+
+```{r}
+getMAE<- function(x,y){
+  x[is.na(x)] <- mean(x, na.rm = TRUE)
+  y[is.na(y)] <- mean(y, na.rm = TRUE)
+  mae <- mean(abs(x-y))
+}
+```
+
+### 4
+
+```{r}
+set.seed(10)
+n <- 100
+x <- runif(n)
+resp <- 3 + 10*x + rnorm(n)
+pred <- predict(lm(resp ~ x), data.frame(x))
+
+mae<-getMAE(resp,pred)
+print(mae)
+
+resp[2] <-NA
+pred[5] <-NA
+
+mae<-getMAE(resp,pred)
+print(mae)
+```
+
+### 5
+
+```{r}
+wrapper <- function(x, y) {
+  if (!is.vector(x) | !is.vector(y)) {
+    print("We need vectors")
+    return()
+  } else if ((!is.atomic(x) & !is.numeric(x)) | (!is.atomic(y) & !is.numeric(y))) {
+    print("We need atomic or numeric vectors")
+    return()
+  } else {
+    rmse <- getRMSE(x, y)
+    mae <- getMAE(x, y)
+    result <- c(rmse, mae)
+    names(result) <- c("rmse", "mae")
+    return(result)
+  }
+}
+
+```
+
+### 6
+
+```{r}
+ set.seed(10)
+ n <- 100
+ x <- runif(n)
+ resp <- 3 + 10*x + rnorm(n)
+ pred <- predict(lm(resp ~ x), data.frame(x))
+
+ result<-wrapper(resp,pred)
+
+ result
+ 
+resp[2] <-NA
+pred[5] <-NA
+
+result<-wrapper(resp,pred)
+print(result)
+
+
+```
+
+## Task 3- Querying an API and a Tidy-Style Function
+
+```{r}
+library(httr)
+library(jsonlite)
+```
+
+### 1
+
+```{r}
+api_key <- "307b37fc38da410492f71b843cd9c7a9"
+
+response <- GET("https://newsapi.org/v2/everything", query = list(q = "tesla",  apiKey = api_key))
+
+parsed <- fromJSON(rawToChar(response$content))
+
+parsed1 <- as.data.frame(parsed)
+
+```
+
+### 2
+
+```{r}
+query <- function(title, start,end,key){
+  
+  api_key <- key
+
+  response <- GET("https://newsapi.org/v2/everything", query = list(q = title, from=start, to=end, apiKey = api_key))
+
+  parsed <- fromJSON(rawToChar(response$content))
+
+  parsed1 <- as.data.frame(parsed)
+  
+  return=parsed1
+
+}
+
+google<-query("google","2024-06-01","2024-06-01","307b37fc38da410492f71b843cd9c7a9")
+
+tesla<-query("tesla","2024-06-01","2024-06-01","307b37fc38da410492f71b843cd9c7a9")
+
+```
