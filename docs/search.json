@@ -1,0 +1,30 @@
+[
+  {
+    "objectID": "HW4.html",
+    "href": "HW4.html",
+    "title": "HW4",
+    "section": "",
+    "text": "Apply functon to lists.map()\n\n\n\nlapply(x=my_list,FUN=function(x){temp&lt;-cor(x, method = “kendall”)})\n\n\n\npurrr functions also give a shorthand way to make anonymous functions\n\n\n\nA side-effect function in programming is a function that performs operations other than returning a value,like print()\n\n\n\nWhen you call a function, it creates temporary function environments"
+  },
+  {
+    "objectID": "HW4.html#task-1-conceptual-questions",
+    "href": "HW4.html#task-1-conceptual-questions",
+    "title": "HW4",
+    "section": "",
+    "text": "Apply functon to lists.map()\n\n\n\nlapply(x=my_list,FUN=function(x){temp&lt;-cor(x, method = “kendall”)})\n\n\n\npurrr functions also give a shorthand way to make anonymous functions\n\n\n\nA side-effect function in programming is a function that performs operations other than returning a value,like print()\n\n\n\nWhen you call a function, it creates temporary function environments"
+  },
+  {
+    "objectID": "HW4.html#task-2",
+    "href": "HW4.html#task-2",
+    "title": "HW4",
+    "section": "Task 2",
+    "text": "Task 2\n\n1\n\ngetRMSE&lt;- function(x,y){\n  x[is.na(x)] &lt;- mean(x, na.rm = TRUE)\n  y[is.na(y)] &lt;- mean(y, na.rm = TRUE)\n  rmse &lt;- mean((x-y)^2)^(1/2)\n}\n\n\n\n2\n\nset.seed(10)\nn &lt;- 100\nx &lt;- runif(n)\nresp &lt;- 3 + 10*x + rnorm(n)\npred &lt;- predict(lm(resp ~ x), data.frame(x))\n \nrmse&lt;-getRMSE(resp,pred)\nprint(rmse)\n\n[1] 0.9581677\n\nresp[2] &lt;-NA\npred[5] &lt;-NA\n \nrmse&lt;-getRMSE(resp,pred)\nprint(rmse)\n\n[1] 1.017752\n\n\n\n\n3\n\ngetMAE&lt;- function(x,y){\n  x[is.na(x)] &lt;- mean(x, na.rm = TRUE)\n  y[is.na(y)] &lt;- mean(y, na.rm = TRUE)\n  mae &lt;- mean(abs(x-y))\n}\n\n\n\n4\n\nset.seed(10)\nn &lt;- 100\nx &lt;- runif(n)\nresp &lt;- 3 + 10*x + rnorm(n)\npred &lt;- predict(lm(resp ~ x), data.frame(x))\n\nmae&lt;-getMAE(resp,pred)\nprint(mae)\n\n[1] 0.8155776\n\nresp[2] &lt;-NA\npred[5] &lt;-NA\n\nmae&lt;-getMAE(resp,pred)\nprint(mae)\n\n[1] 0.852646\n\n\n\n\n5\n\nwrapper &lt;- function(x, y) {\n  if (!is.vector(x) | !is.vector(y)) {\n    print(\"We need vectors\")\n    return()\n  } else if ((!is.atomic(x) & !is.numeric(x)) | (!is.atomic(y) & !is.numeric(y))) {\n    print(\"We need atomic or numeric vectors\")\n    return()\n  } else {\n    rmse &lt;- getRMSE(x, y)\n    mae &lt;- getMAE(x, y)\n    result &lt;- c(rmse, mae)\n    names(result) &lt;- c(\"rmse\", \"mae\")\n    return(result)\n  }\n}\n\n\n\n6\n\n set.seed(10)\n n &lt;- 100\n x &lt;- runif(n)\n resp &lt;- 3 + 10*x + rnorm(n)\n pred &lt;- predict(lm(resp ~ x), data.frame(x))\n\n result&lt;-wrapper(resp,pred)\n\n result\n\n     rmse       mae \n0.9581677 0.8155776 \n\nresp[2] &lt;-NA\npred[5] &lt;-NA\n\nresult&lt;-wrapper(resp,pred)\nprint(result)\n\n    rmse      mae \n1.017752 0.852646"
+  },
+  {
+    "objectID": "HW4.html#task-3--querying-an-api-and-a-tidy-style-function",
+    "href": "HW4.html#task-3--querying-an-api-and-a-tidy-style-function",
+    "title": "HW4",
+    "section": "Task 3- Querying an API and a Tidy-Style Function",
+    "text": "Task 3- Querying an API and a Tidy-Style Function\n\nlibrary(httr)\nlibrary(jsonlite)\n\n\n1\n\napi_key &lt;- \"307b37fc38da410492f71b843cd9c7a9\"\n\nresponse &lt;- GET(\"https://newsapi.org/v2/everything\", query = list(q = \"tesla\",  apiKey = api_key))\n\nparsed &lt;- fromJSON(rawToChar(response$content))\n\nparsed1 &lt;- as.data.frame(parsed)\n\n\n\n2\n\nquery &lt;- function(title, start,end,key){\n  \n  api_key &lt;- key\n\n  response &lt;- GET(\"https://newsapi.org/v2/everything\", query = list(q = title, from=start, to=end, apiKey = api_key))\n\n  parsed &lt;- fromJSON(rawToChar(response$content))\n\n  parsed1 &lt;- as.data.frame(parsed)\n  \n  return=parsed1\n\n}\n\ngoogle&lt;-query(\"google\",\"2024-06-01\",\"2024-06-01\",\"307b37fc38da410492f71b843cd9c7a9\")\n\ntesla&lt;-query(\"tesla\",\"2024-06-01\",\"2024-06-01\",\"307b37fc38da410492f71b843cd9c7a9\")"
+  }
+]
